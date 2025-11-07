@@ -1,0 +1,101 @@
+{
+  "mcp_tools": [
+    {
+      "name": "amap_maps",
+      "description": "Query location information, geocoding, route planning, and POI search using Amap (高德地图) API. Supports Chinese cities and addresses.",
+      "command": "npx",
+      "args": ["-y", "@amap/amap-maps-mcp-server"],
+      "env": {
+        "AMAP_MAPS_API_KEY": "${AMAP_API_KEY}"
+      },
+      "capabilities": ["geocoding", "route_planning", "poi_search", "reverse_geocoding"]
+    }
+  ],
+
+  "api_tools": [
+    {
+      "name": "weather_forecast",
+      "description": "Get weather forecast for any city worldwide. Returns temperature, humidity, wind speed, and 3-hour interval forecasts.",
+      "endpoint": "https://weather-api167.p.rapidapi.com/api/weather/forecast",
+      "method": "GET",
+      "headers": {
+        "x-rapidapi-key": "${RAPIDAPI_KEY}",
+        "x-rapidapi-host": "weather-api167.p.rapidapi.com",
+        "Accept": "application/json"
+      },
+      "params": {
+        "place": {
+          "type": "string",
+          "required": true,
+          "description": "City name with country code, e.g., 'London,GB', 'Beijing,CN'"
+        },
+        "cnt": {
+          "type": "string",
+          "required": false,
+          "default": "3",
+          "description": "Number of forecast intervals"
+        },
+        "units": {
+          "type": "string",
+          "required": false,
+          "default": "metric",
+          "description": "Temperature unit: 'metric' (Celsius), 'imperial' (Fahrenheit), or 'standard' (Kelvin)"
+        },
+        "lang": {
+          "type": "string",
+          "required": false,
+          "default": "en",
+          "description": "Language code: 'en', 'zh_cn', etc."
+        }
+      }
+    },
+    {
+      "name": "traffic_data",
+      "description": "Get real-time traffic congestion data for major cities. Returns traffic flow, congestion levels, and incident information.",
+      "endpoint": "https://traffic-data.p.rapidapi.com/v1/flow",
+      "method": "GET",
+      "headers": {
+        "x-rapidapi-key": "${RAPIDAPI_KEY}",
+        "x-rapidapi-host": "traffic-data.p.rapidapi.com"
+      },
+      "params": {
+        "city": {
+          "type": "string",
+          "required": true,
+          "description": "City name"
+        },
+        "date": {
+          "type": "string",
+          "required": false,
+          "description": "Date in YYYY-MM-DD format (default: today)"
+        }
+      }
+    }
+  ],
+
+  "code_tools": [
+    {
+      "name": "geopandas_spatial",
+      "description": "Perform spatial analysis on geographic data: buffer, intersection, union, spatial joins, coordinate transformations. Supports GeoJSON, Shapefile, and WKT formats.",
+      "github_url": "https://github.com/geopandas/geopandas",
+      "entry_function": "spatial_operation",
+      "params": {
+        "operation": {
+          "type": "string",
+          "required": true,
+          "description": "Operation type: 'buffer', 'intersection', 'union', 'difference', 'spatial_join'"
+        },
+        "geometry": {
+          "type": "object",
+          "required": true,
+          "description": "GeoJSON geometry object or WKT string"
+        },
+        "distance": {
+          "type": "number",
+          "required": false,
+          "description": "Distance parameter for buffer operation (in meters)"
+        }
+      }
+    }
+  ]
+}
