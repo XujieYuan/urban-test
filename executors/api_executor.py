@@ -151,6 +151,36 @@ class APIExecutor:
 
         return params
 
+    def _prepare_url(self, url: str, params: Dict) -> tuple[str, Dict]:
+        """
+        准备 URL，处理路径参数（如 /users/{username}）
+
+        Args:
+            url: 原始 URL，可能包含 {param} 模板
+            params: 参数字典
+
+        Returns:
+            (处理后的 URL, 剩余的查询参数)
+        """
+        # 提取 URL 中的路径参数
+        import re
+        path_params = re.findall(r'\{(\w+)\}', url)
+
+        # 替换路径参数
+        processed_url = url
+        remaining_params = params.copy()
+
+        for param_name in path_params:
+            if param_name in remaining_params:
+                processed_url = processed_url.replace(
+                    f'{{{param_name}}}',
+                    str(remaining_params[param_name])
+                )
+                # 移除已用作路径参数的值
+                del remaining_params[param_name]
+
+        return processed_url, remaining_params
+
     def _send_request(self, method: str, url: str, headers: Dict, params: Dict) -> Any:
         """
         发送 HTTP 请求
@@ -162,14 +192,17 @@ class APIExecutor:
         """
         timeout = 30  # 默认超时 30 秒
 
+        # 处理 URL 模板参数（如 /users/{username}）
+        processed_url, query_params = self._prepare_url(url, params)
+
         if method == "GET":
-            response = requests.get(url, headers=headers, params=params, timeout=timeout)
+            response = requests.get(processed_url, headers=headers, params=query_params, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, headers=headers, json=params, timeout=timeout)
+            response = requests.post(processed_url, headers=headers, json=query_params, timeout=timeout)
         elif method == "PUT":
-            response = requests.put(url, headers=headers, json=params, timeout=timeout)
+            response = requests.put(processed_url, headers=headers, json=query_params, timeout=timeout)
         elif method == "DELETE":
-            response = requests.delete(url, headers=headers, params=params, timeout=timeout)
+            response = requests.delete(processed_url, headers=headers, params=query_params, timeout=timeout)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
 

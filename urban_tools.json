@@ -14,8 +14,25 @@
 
   "api_tools": [
     {
+      "name": "github_user_info",
+      "description": "Get GitHub user profile information including username, bio, public repositories count, and followers. This is a free API that works without authentication.",
+      "endpoint": "https://api.github.com/users/{username}",
+      "method": "GET",
+      "headers": {
+        "Accept": "application/json",
+        "User-Agent": "Urban-Computing-Tool-System"
+      },
+      "params": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "GitHub username, e.g., 'octocat', 'torvalds'"
+        }
+      }
+    },
+    {
       "name": "weather_forecast",
-      "description": "Get weather forecast for any city worldwide. Returns temperature, humidity, wind speed, and 3-hour interval forecasts.",
+      "description": "Get weather forecast for any city worldwide. Returns temperature, humidity, wind speed, and 3-hour interval forecasts. (Requires valid RAPIDAPI_KEY)",
       "endpoint": "https://weather-api167.p.rapidapi.com/api/weather/forecast",
       "method": "GET",
       "headers": {

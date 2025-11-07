@@ -1,6 +1,8 @@
 """
 Code Executor - 负责处理 GitHub 代码工具
 
+⚠️ **COMING SOON** - This module is currently under development
+
 开发者：Code 团队负责人
 职责：
 1. 管理 GitHub 代码仓库的克隆
@@ -14,6 +16,11 @@ TODO for Code Developer:
 - [ ] 实现转换失败的回退机制
 - [ ] 优化大型仓库的处理
 - [ ] 添加工具元数据管理
+
+依赖说明：
+- 需要父项目的 MCP 转换功能或独立实现
+- GitHub: 需要提供 MCP-agent-github-repo-output 项目地址
+- 安装方式: git clone 到指定位置
 """
 
 import os
@@ -43,6 +50,8 @@ class CodeExecutor:
         """
         执行代码工具调用
 
+        ⚠️ COMING SOON - Code tool support is under development
+
         Args:
             config: 工具配置
                 - name: 工具名称
@@ -58,33 +67,17 @@ class CodeExecutor:
                 "error": str | None
             }
         """
-        try:
-            github_url = config["github_url"]
-
-            # 1. 检查是否已转换为 MCP
-            mcp_path = self._get_mcp_path(github_url)
-
-            if not mcp_path.exists():
-                # 2. 需要转换
-                print(f"⚙️  Converting {github_url} to MCP tool...")
-                self._convert_to_mcp(github_url)
-
-            # 3. 调用本地 MCP 工具
-            print(f"📦 Loading MCP tool from {mcp_path}")
-            result = self._call_local_mcp(mcp_path, config, arguments)
-
-            return {
-                "success": True,
-                "result": result,
-                "error": None
-            }
-
-        except Exception as e:
-            return {
-                "success": False,
-                "result": None,
-                "error": f"Code tool execution failed: {str(e)}"
-            }
+        # Code 工具支持正在开发中
+        return {
+            "success": False,
+            "result": None,
+            "error": (
+                "⚠️ Code Executor is coming soon! "
+                "This feature requires GitHub code to MCP conversion functionality. "
+                f"Tool '{config.get('name', 'unknown')}' from '{config.get('github_url', 'unknown')}' cannot be executed yet. "
+                "Please use API tools or check back later for updates."
+            )
+        }
 
     def _get_mcp_path(self, github_url: str) -> Path:
         """
