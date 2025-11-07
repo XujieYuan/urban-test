@@ -54,6 +54,14 @@ Available Tools:
 {tools}
 
 Analyze the query and select the best tool to answer it.
+
+IMPORTANT PARAMETER EXTRACTION RULES:
+- For GitHub usernames: convert to lowercase, remove spaces (e.g., "Linus Torvalds" -> "torvalds")
+- For weather_forecast (RapidAPI): Use "place" parameter with format "City,CountryCode" (e.g., "London,GB", "Beijing,CN", "Tokyo,JP")
+- For weather_forecast_free (Open-Meteo): Use "latitude" and "longitude" parameters with decimal coordinates
+- For coordinates queries: use the provided latitude/longitude values if available, otherwise use weather_forecast_free with location name
+- Extract parameter values in the exact format expected by the tool
+
 Respond ONLY with valid JSON in this exact format:
 {{
   "tool_name": "exact_tool_name_from_list",
@@ -203,11 +211,10 @@ def main():
         print(f"❌ Error: {e}")
         return
 
-    # 示例查询
+    # 示例查询（使用实际可用的 API 工具）
     queries = [
-        "Analyze the sentiment of: 'Urban planning in Beijing is fascinating and innovative!'",
-        "Get traffic data for Shanghai on 2024-01-15",
-        "Get POI data for restaurants in New York within 5km radius",
+        "Get GitHub user information for Linus Torvalds",
+        "What is the weather forecast for Beijing? (coordinates: 39.9042°N, 116.4074°E)",
     ]
 
     # 处理查询

@@ -37,7 +37,7 @@ def test_tool_retrieval():
         manager = UrbanToolManager("./urban_tools.json")
 
         # Test getting tool by name
-        tool_names = ["sentiment_analysis", "get_traffic_data", "get_poi_data"]
+        tool_names = ["weather_forecast", "github_user_info"]
 
         for name in tool_names:
             tool = manager.get_tool_by_name(name)

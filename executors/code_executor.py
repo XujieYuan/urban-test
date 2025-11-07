@@ -1,6 +1,9 @@
 """
 Code Executor - 负责处理 GitHub 代码工具
 
+🚀 STATUS: Coming Soon
+这个模块计划在未来版本中实现。目前仅提供接口框架。
+
 开发者：Code 团队负责人
 职责：
 1. 管理 GitHub 代码仓库的克隆
@@ -14,6 +17,10 @@ TODO for Code Developer:
 - [ ] 实现转换失败的回退机制
 - [ ] 优化大型仓库的处理
 - [ ] 添加工具元数据管理
+
+参考资料（将来开发时使用）：
+- GitHub API: https://docs.github.com/en/rest
+- MCP Agent: https://github.com/anthropics/mcp-python-server
 """
 
 import os
@@ -43,6 +50,9 @@ class CodeExecutor:
         """
         执行代码工具调用
 
+        ⚠️ STATUS: Coming Soon
+        此功能尚未实现，计划在下一个版本中推出。
+
         Args:
             config: 工具配置
                 - name: 工具名称
@@ -58,33 +68,11 @@ class CodeExecutor:
                 "error": str | None
             }
         """
-        try:
-            github_url = config["github_url"]
-
-            # 1. 检查是否已转换为 MCP
-            mcp_path = self._get_mcp_path(github_url)
-
-            if not mcp_path.exists():
-                # 2. 需要转换
-                print(f"⚙️  Converting {github_url} to MCP tool...")
-                self._convert_to_mcp(github_url)
-
-            # 3. 调用本地 MCP 工具
-            print(f"📦 Loading MCP tool from {mcp_path}")
-            result = self._call_local_mcp(mcp_path, config, arguments)
-
-            return {
-                "success": True,
-                "result": result,
-                "error": None
-            }
-
-        except Exception as e:
-            return {
-                "success": False,
-                "result": None,
-                "error": f"Code tool execution failed: {str(e)}"
-            }
+        return {
+            "success": False,
+            "result": None,
+            "error": "Code executor is coming soon. This feature will be available in a future release."
+        }
 
     def _get_mcp_path(self, github_url: str) -> Path:
         """

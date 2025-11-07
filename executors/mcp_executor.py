@@ -1,6 +1,9 @@
 """
 MCP Executor - 负责调用 MCP 服务
 
+🚀 STATUS: Coming Soon
+这个模块计划在未来版本中实现。目前仅提供接口框架。
+
 开发者：MCP 团队负责人
 职责：
 1. 实现 MCP 协议通信
@@ -14,6 +17,10 @@ TODO for MCP Developer:
 - [ ] 实现 MCP SSE 通信
 - [ ] 添加连接池管理
 - [ ] 添加调用缓存机制
+
+参考资料（将来开发时使用）：
+- MCP 官方文档: https://modelcontextprotocol.io/
+- Python MCP SDK: https://github.com/anthropics/python-sdk
 """
 
 import os
@@ -43,6 +50,9 @@ class MCPExecutor:
         """
         执行 MCP 工具调用
 
+        ⚠️ STATUS: Coming Soon
+        此功能尚未实现，计划在下一个版本中推出。
+
         Args:
             config: 工具配置
                 - name: 工具名称
@@ -58,31 +68,11 @@ class MCPExecutor:
                 "error": str | None
             }
         """
-        try:
-            # TODO: MCP 开发者实现此部分
-            #
-            # 建议实现步骤：
-            # 1. 检查缓存（如果支持）
-            # 2. 启动 MCP 服务（如果未启动）
-            # 3. 通过 stdio/SSE 发送请求
-            # 4. 接收响应
-            # 5. 保存缓存（如果需要）
-
-            # 临时实现：模拟 MCP 调用
-            result = self._mock_mcp_call(config, arguments)
-
-            return {
-                "success": True,
-                "result": result,
-                "error": None
-            }
-
-        except Exception as e:
-            return {
-                "success": False,
-                "result": None,
-                "error": f"MCP execution failed: {str(e)}"
-            }
+        return {
+            "success": False,
+            "result": None,
+            "error": "MCP executor is coming soon. This feature will be available in a future release."
+        }
 
     def _mock_mcp_call(self, config: Dict, arguments: Dict) -> Dict:
         """

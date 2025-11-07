@@ -66,17 +66,76 @@ class UrbanToolManager:
             config: 工具配置
             executor: 对应的执行器
         """
+        from pydantic import BaseModel, Field, create_model
+
         def tool_func(**kwargs):
             """工具函数包装器"""
             return executor.execute(config, kwargs)
 
+        # 构建参数 schema
+        args_schema = self._build_args_schema(config, tool_type)
+
         lc_tool = StructuredTool.from_function(
             func=tool_func,
             name=config["name"],
-            description=config["description"]
+            description=config["description"],
+            args_schema=args_schema if args_schema else None
         )
 
         self.langchain_tools.append(lc_tool)
+
+    def _build_args_schema(self, config: Dict, tool_type: str):
+        """
+        构建工具参数的 Pydantic schema
+
+        Args:
+            config: 工具配置
+            tool_type: 工具类型
+
+        Returns:
+            Pydantic 模型类或 None
+        """
+        from pydantic import BaseModel, Field, create_model
+
+        # 获取参数定义
+        if tool_type == "api":
+            params_def = config.get("params", {})
+        else:
+            # MCP 和 Code 工具的参数定义
+            params_def = config.get("params", {})
+
+        if not params_def:
+            return None
+
+        # 构建 Pydantic 字段
+        fields = {}
+        for param_name, param_info in params_def.items():
+            param_type = param_info.get("type", "string")
+            required = param_info.get("required", False)
+            description = param_info.get("description", "")
+
+            # 类型映射
+            python_type = str
+            if param_type == "number":
+                python_type = float
+            elif param_type == "integer":
+                python_type = int
+            elif param_type == "boolean":
+                python_type = bool
+
+            # 构建字段
+            if required:
+                fields[param_name] = (python_type, Field(..., description=description))
+            else:
+                default_val = param_info.get("default", None)
+                fields[param_name] = (python_type, Field(default=default_val, description=description))
+
+        # 创建动态模型
+        if fields:
+            model = create_model("ToolArgs", **fields)
+            return model
+
+        return None
 
     def get_tools(self) -> List[StructuredTool]:
         """获取所有 LangChain 工具"""

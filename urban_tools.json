@@ -1,25 +1,14 @@
 {
-  "mcp_tools": [
-    {
-      "name": "amap_maps",
-      "description": "Query location information, geocoding, route planning, and POI search using Amap (高德地图) API. Supports Chinese cities and addresses.",
-      "command": "npx",
-      "args": ["-y", "@amap/amap-maps-mcp-server"],
-      "env": {
-        "AMAP_MAPS_API_KEY": "${AMAP_API_KEY}"
-      },
-      "capabilities": ["geocoding", "route_planning", "poi_search", "reverse_geocoding"]
-    }
-  ],
+  "mcp_tools": [],
 
   "api_tools": [
     {
       "name": "weather_forecast",
-      "description": "Get weather forecast for any city worldwide. Returns temperature, humidity, wind speed, and 3-hour interval forecasts.",
+      "description": "Get weather forecast for any location using RapidAPI Weather API. Returns 3-hour interval forecasts with temperature, humidity, wind speed, and weather conditions.",
       "endpoint": "https://weather-api167.p.rapidapi.com/api/weather/forecast",
       "method": "GET",
       "headers": {
-        "x-rapidapi-key": "${RAPIDAPI_KEY}",
+        "x-rapidapi-key": "93b538cb11msh05c0ef72610bd44p1f13ddjsn9155b4fae6ca",
         "x-rapidapi-host": "weather-api167.p.rapidapi.com",
         "Accept": "application/json"
       },
@@ -27,75 +16,96 @@
         "place": {
           "type": "string",
           "required": true,
-          "description": "City name with country code, e.g., 'London,GB', 'Beijing,CN'"
+          "description": "Location name with country code (e.g., 'London,GB', 'Beijing,CN', 'New York,US')"
         },
         "cnt": {
-          "type": "string",
+          "type": "integer",
           "required": false,
-          "default": "3",
-          "description": "Number of forecast intervals"
+          "default": 10,
+          "description": "Number of forecasts to return (1-40, default 10)"
         },
         "units": {
           "type": "string",
           "required": false,
           "default": "metric",
-          "description": "Temperature unit: 'metric' (Celsius), 'imperial' (Fahrenheit), or 'standard' (Kelvin)"
+          "description": "Units: 'metric' (Celsius, m/s) or 'standard' (Kelvin, m/s)"
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "default": "three_hour",
+          "description": "Forecast interval: 'three_hour' or 'daily'"
+        },
+        "mode": {
+          "type": "string",
+          "required": false,
+          "default": "json",
+          "description": "Response format: 'json' or 'xml'"
         },
         "lang": {
           "type": "string",
           "required": false,
           "default": "en",
-          "description": "Language code: 'en', 'zh_cn', etc."
+          "description": "Language code (e.g., 'en', 'zh', 'es', 'fr')"
         }
       }
     },
     {
-      "name": "traffic_data",
-      "description": "Get real-time traffic congestion data for major cities. Returns traffic flow, congestion levels, and incident information.",
-      "endpoint": "https://traffic-data.p.rapidapi.com/v1/flow",
+      "name": "weather_forecast_free",
+      "description": "Get weather forecast for any location worldwide using Open-Meteo API (free, no authentication required). Returns daily forecast including temperature, wind speed, and precipitation data. Use this as fallback when RapidAPI is unavailable.",
+      "endpoint": "https://api.open-meteo.com/v1/forecast",
       "method": "GET",
       "headers": {
-        "x-rapidapi-key": "${RAPIDAPI_KEY}",
-        "x-rapidapi-host": "traffic-data.p.rapidapi.com"
+        "Accept": "application/json"
       },
       "params": {
-        "city": {
-          "type": "string",
+        "latitude": {
+          "type": "number",
           "required": true,
-          "description": "City name"
+          "description": "Latitude of the location"
         },
-        "date": {
+        "longitude": {
+          "type": "number",
+          "required": true,
+          "description": "Longitude of the location"
+        },
+        "daily": {
           "type": "string",
           "required": false,
-          "description": "Date in YYYY-MM-DD format (default: today)"
+          "default": "temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max",
+          "description": "Comma-separated list of daily weather variables (temperature_2m_max, temperature_2m_min, precipitation_sum, wind_speed_10m_max, etc.)"
+        },
+        "temperature_unit": {
+          "type": "string",
+          "required": false,
+          "default": "celsius",
+          "description": "Temperature unit: 'celsius', 'fahrenheit'"
+        },
+        "timezone": {
+          "type": "string",
+          "required": false,
+          "default": "auto",
+          "description": "Timezone for output (e.g., 'auto', 'UTC', 'Asia/Shanghai')"
+        }
+      }
+    },
+    {
+      "name": "github_user_info",
+      "description": "Get GitHub user information including repos, followers, and public activity. Free API, no authentication required.",
+      "endpoint": "https://api.github.com/users/{username}",
+      "method": "GET",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "params": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "GitHub username (e.g., 'torvalds', 'guido')"
         }
       }
     }
   ],
 
-  "code_tools": [
-    {
-      "name": "geopandas_spatial",
-      "description": "Perform spatial analysis on geographic data: buffer, intersection, union, spatial joins, coordinate transformations. Supports GeoJSON, Shapefile, and WKT formats.",
-      "github_url": "https://github.com/geopandas/geopandas",
-      "entry_function": "spatial_operation",
-      "params": {
-        "operation": {
-          "type": "string",
-          "required": true,
-          "description": "Operation type: 'buffer', 'intersection', 'union', 'difference', 'spatial_join'"
-        },
-        "geometry": {
-          "type": "object",
-          "required": true,
-          "description": "GeoJSON geometry object or WKT string"
-        },
-        "distance": {
-          "type": "number",
-          "required": false,
-          "description": "Distance parameter for buffer operation (in meters)"
-        }
-      }
-    }
-  ]
+  "code_tools": []
 }

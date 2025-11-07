@@ -84,10 +84,17 @@ class APIExecutor:
             # 4. 处理参数（添加默认值）
             params = self._prepare_params(config.get("params", {}), arguments)
 
-            # 5. 发送请求
+            # 5. 处理 URL 路径参数（如 {username}）
+            url, path_params = self._replace_url_params(url, arguments)
+
+            # 6. 移除已用于路径的参数（避免重复传入）
+            for param_name in path_params:
+                params.pop(param_name, None)
+
+            # 7. 发送请求
             response = self._send_request(method, url, headers, params)
 
-            # 6. 保存缓存
+            # 7. 保存缓存
             self._save_cache(cache_key, response)
 
             return {
@@ -108,6 +115,31 @@ class APIExecutor:
                 "result": None,
                 "error": f"Unexpected error: {str(e)}"
             }
+
+    def _replace_url_params(self, url: str, arguments: Dict) -> tuple:
+        """
+        替换 URL 中的路径参数
+        例如：https://api.github.com/users/{username} -> https://api.github.com/users/torvalds
+
+        Args:
+            url: 带有 {param} 占位符的 URL
+            arguments: 参数字典
+
+        Returns:
+            (替换后的 URL, 已替换的参数名列表)
+        """
+        import re
+
+        # 找到所有 {param} 格式的占位符
+        placeholders = re.findall(r'\{(\w+)\}', url)
+        used_params = []
+
+        for placeholder in placeholders:
+            if placeholder in arguments:
+                url = url.replace(f'{{{placeholder}}}', str(arguments[placeholder]))
+                used_params.append(placeholder)
+
+        return url, used_params
 
     def _prepare_headers(self, headers: Dict) -> Dict:
         """
@@ -130,7 +162,7 @@ class APIExecutor:
 
     def _prepare_params(self, param_schema: Dict, arguments: Dict) -> Dict:
         """
-        准备请求参数，填充默认值
+        准备请求参数，填充默认值并进行类型转换
 
         Args:
             param_schema: 参数定义
@@ -141,8 +173,25 @@ class APIExecutor:
         """
         params = {}
 
-        # 添加用户提供的参数
-        params.update(arguments)
+        # 添加用户提供的参数，并进行类型转换
+        for param_name, param_value in arguments.items():
+            if param_name in param_schema:
+                param_def = param_schema[param_name]
+                param_type = param_def.get("type", "string")
+
+                # 进行类型转换
+                if param_type == "number":
+                    try:
+                        param_value = float(param_value) if isinstance(param_value, str) else param_value
+                    except (ValueError, TypeError):
+                        pass
+                elif param_type == "integer":
+                    try:
+                        param_value = int(param_value) if isinstance(param_value, str) else param_value
+                    except (ValueError, TypeError):
+                        pass
+
+            params[param_name] = param_value
 
         # 填充默认值
         for param_name, param_def in param_schema.items():
