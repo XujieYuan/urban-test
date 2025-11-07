@@ -1,321 +1,173 @@
 # Urban Computing Tool System 🏙️
 
-An intelligent tool selection and execution system for urban computing tasks, powered by LLM and supporting three types of tools: MCP services, APIs, and GitHub code repositories.
+An intelligent LLM-powered system that automatically selects and executes tools to answer user queries.
 
----
+## ✨ Features
 
-## 🎯 Features
-
-- **Intelligent Tool Selection**: LLM automatically selects the most suitable tool based on user queries
-- **Three Tool Types**:
-  - 🔌 **MCP Services**: External MCP servers (e.g., mcp.so)
-  - 🌐 **REST APIs**: Public APIs (e.g., RapidAPI)
-  - 💻 **GitHub Code**: Automatically converts code repos to MCP tools
-- **Simple Configuration**: JSON-based tool pool management
-- **LangChain Integration**: Easy to extend with more LLM providers
-- **Single-Step Tasks**: Optimized for straightforward queries
+- **Intelligent Tool Selection**: LLM automatically chooses the best tool for each query
+- **Multiple Tool Types**: REST APIs, MCP services, GitHub code repositories
+- **Response Caching**: Avoid redundant API calls with automatic caching
+- **Easy Configuration**: JSON-based tool pool management
 
 ---
 
 ## 📂 Project Structure
 
 ```
-urban/
-├── main.py                   # Main entry point
-├── tool_manager.py           # Tool pool manager
-├── tool_executor.py          # Tool execution logic
-├── urban_tools.json          # Tool configuration
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment variables template
-├── README.md                 # This file
-└── MCP_Memory/               # Cache for converted GitHub repos
+urban-test/
+├── main.py                 # Main entry point
+├── tool_manager.py         # Tool pool manager
+├── urban_tools.json        # Tool configuration
+├── executors/              # Tool execution engines
+│   ├── api_executor.py     # REST API executor
+│   ├── mcp_executor.py     # MCP service executor (coming soon)
+│   └── code_executor.py    # Code executor (coming soon)
+├── Cache/                  # API response cache
+├── Test/                   # Test scripts and results
+├── requirements.txt        # Python dependencies
+└── .env                    # API keys and credentials
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start for Users
 
-### 1. Install Dependencies
+### 1. Setup Environment
 
 ```bash
-cd urban
+# Create conda environment
+conda create -n urban-test python=3.10
+conda activate urban-test
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment
-
-Copy the example environment file and fill in your API keys:
+### 2. Configure API Keys
 
 ```bash
+# Copy example env file
 cp .env.example .env
-```
 
-Edit `.env`:
-```bash
-# Required
-OPENAI_API_KEY=sk-your-key-here
+# Edit .env with your API keys
+OPENAI_API_KEY=sk-your-key
 OPENAI_BASE_URL=https://api.openai.com/v1
-
-# Optional (if using API tools)
-RAPIDAPI_KEY=your-rapidapi-key
-
-# Optional (if using GitHub code tools)
-GITHUB_TOKEN=ghp_your-token
 ```
 
-### 3. Configure Your Tool Pool
+### 3. Run the System
 
-Edit `urban_tools.json` to add or modify tools. Example structure:
+```bash
+python3 main.py
+```
+
+Results will be saved to `Test/results_{timestamp}.json`
+
+---
+
+## 📊 Available Tools
+
+### 1. GitHub User Info
+```
+Query: "Get GitHub user information for Linus Torvalds"
+→ Returns: User profile, repos, followers, etc.
+```
+
+### 2. Weather Forecast (RapidAPI)
+```
+Query: "What is the weather in London?"
+→ Returns: 3-hour interval forecasts with temperature, humidity, wind
+```
+
+### 3. Weather Forecast (Open-Meteo - Free)
+```
+Query: "Weather for Beijing (39.9042°N, 116.4074°E)"
+→ Returns: 7-day daily forecast
+```
+
+---
+
+## 🔧 For Developers
+
+### Adding a New API Tool
+
+Edit `urban_tools.json`:
 
 ```json
 {
-  "tools": [
+  "api_tools": [
     {
-      "name": "sentiment_analysis",
-      "type": "mcp",
-      "description": "Analyze sentiment of text",
-      "mcp_url": "https://mcp.so/servers/sentiment-analysis",
-      "tool_name": "analyze_sentiment",
-      "parameters_schema": {
-        "text": {"type": "string", "description": "Text to analyze"}
-      }
-    },
-    {
-      "name": "get_traffic_data",
-      "type": "api",
-      "description": "Get traffic data",
-      "api_endpoint": "https://traffic-data.p.rapidapi.com/v1/data",
+      "name": "my_api_tool",
+      "description": "What this tool does",
+      "endpoint": "https://api.example.com/endpoint",
       "method": "GET",
       "headers": {
-        "X-RapidAPI-Key": "${RAPIDAPI_KEY}"
+        "Authorization": "Bearer ${MY_API_KEY}"
+      },
+      "params": {
+        "param1": {
+          "type": "string",
+          "required": true,
+          "description": "Parameter description"
+        }
       }
-    },
-    {
-      "name": "spatial_analysis",
-      "type": "code",
-      "description": "Run spatial analysis",
-      "github_url": "https://github.com/geopandas/geopandas",
-      "needs_conversion": true
     }
   ]
 }
 ```
 
-### 4. Run the System
+### Updating Parameter Extraction Rules
+
+Edit `main.py` in the system prompt:
+
+```python
+# Add your tool's parameter extraction rules
+IMPORTANT PARAMETER EXTRACTION RULES:
+- For my_tool: use "param" in format "value"
+```
+
+### Testing Your Tool
 
 ```bash
-python main.py
+python3 Test/api/test_rapidapi_weather.py
 ```
 
 ---
 
-## 💡 How It Works
+## 🧪 Testing
 
-### Workflow
+### Run Full End-to-End Test
+```bash
+python3 main.py
+```
+
+### Run Specific API Test
+```bash
+python3 Test/api/test_rapidapi_weather.py
+```
+
+### Check Results
+```bash
+# View latest results
+ls -ltr Test/results_*.json | tail -1
+
+# View cached API responses
+ls -lh Cache/api/
+```
+
+---
+
+## 🔌 How It Works
 
 ```
 User Query
     ↓
-1. LLM selects appropriate tool from pool
+LLM selects best tool
     ↓
-2. Execute tool based on type:
-   - MCP: Call external MCP service (HTTP)
-   - API: Call REST API (HTTP)
-   - Code: Convert to MCP (if needed) → Local call
+Tool executes (API/MCP/Code)
     ↓
-3. LLM generates final answer from tool result
+Response cached
     ↓
-Final Answer
+LLM generates answer
+    ↓
+Results saved with timestamp
 ```
-
-### Example Query
-
-```python
-query = "Analyze the sentiment of: 'Urban planning is fascinating!'"
-
-# System automatically:
-# 1. Selects: sentiment_analysis (MCP tool)
-# 2. Executes: Calls https://mcp.so/servers/sentiment-analysis
-# 3. Generates: "The text expresses a positive sentiment..."
-```
-
----
-
-## 🛠️ Adding New Tools
-
-### Add an MCP Tool
-
-```json
-{
-  "name": "your_mcp_tool",
-  "type": "mcp",
-  "description": "What this tool does",
-  "mcp_url": "https://your-mcp-server.com/api",
-  "tool_name": "tool_function_name",
-  "parameters_schema": {
-    "param1": {"type": "string", "description": "Description"}
-  }
-}
-```
-
-### Add an API Tool
-
-```json
-{
-  "name": "your_api_tool",
-  "type": "api",
-  "description": "What this API does",
-  "api_endpoint": "https://api.example.com/endpoint",
-  "method": "POST",
-  "headers": {
-    "Authorization": "Bearer ${YOUR_API_KEY}"
-  },
-  "parameters_schema": {
-    "param1": {"type": "string", "description": "Description"}
-  }
-}
-```
-
-### Add a Code Tool
-
-```json
-{
-  "name": "your_code_tool",
-  "type": "code",
-  "description": "What this code does",
-  "github_url": "https://github.com/user/repo",
-  "needs_conversion": true,
-  "method_name": "function_to_call",
-  "parameters_schema": {
-    "param1": {"type": "string", "description": "Description"}
-  }
-}
-```
-
----
-
-## 🔧 Advanced Usage
-
-### Programmatic Usage
-
-```python
-from tool_manager import UrbanToolManager
-
-# Initialize
-manager = UrbanToolManager("./urban_tools.json")
-
-# Get all tools
-tools = manager.get_tools()
-
-# Get specific tool
-tool = manager.get_tool_by_name("sentiment_analysis")
-
-# Execute tool
-result = tool.invoke({"text": "Urban planning rocks!"})
-print(result)
-```
-
-### Custom Query Processing
-
-```python
-from main import process_query, load_env
-from tool_manager import UrbanToolManager
-
-load_env()
-manager = UrbanToolManager("./urban_tools.json")
-
-result = process_query("Your custom query here", manager)
-print(result['final_answer'])
-```
-
----
-
-## 📊 Tool Types Comparison
-
-| Feature | MCP | API | Code |
-|---------|-----|-----|------|
-| **Deployment** | External server | External server | Local (after conversion) |
-| **Speed** | Fast | Fast | Medium (first time slower) |
-| **Setup** | None | API key | GitHub token |
-| **Offline** | ❌ | ❌ | ✅ (after conversion) |
-
----
-
-## 🤝 Integration with Parent Project
-
-This urban computing system can be used alongside the main AgenticRAG-TOOL-MCP project:
-
-```python
-# In parent project
-import sys
-sys.path.insert(0, './urban')
-
-from tool_manager import UrbanToolManager
-
-# Use urban tools
-urban_tools = UrbanToolManager('./urban/urban_tools.json')
-```
-
----
-
-## 📝 Example Queries
-
-- "Analyze the sentiment of: 'Beijing is an amazing city!'"
-- "Get traffic data for Shanghai on 2024-01-15"
-- "Get POI data for restaurants in New York within 5km radius"
-- "Run spatial analysis on city boundary data"
-
----
-
-## 🐛 Troubleshooting
-
-### Tool Execution Failed
-
-1. Check if external services (MCP/API) are accessible
-2. Verify API keys in `.env` file
-3. Check network connection
-
-### Code Tool Conversion Failed
-
-1. Verify `GITHUB_TOKEN` is set
-2. Check if parent project's `MCP.py` is accessible
-3. Ensure sufficient disk space for cloning repos
-
-### LLM Not Selecting Correct Tool
-
-1. Improve tool descriptions in `urban_tools.json`
-2. Add more details to `parameters_schema`
-3. Use a more capable model (e.g., gpt-4o instead of gpt-3.5-turbo)
-
----
-
-## 🔮 Future Enhancements
-
-- [ ] Multi-step task support (integrate LangGraph)
-- [ ] Tool result caching
-- [ ] Streaming responses
-- [ ] Web UI interface
-- [ ] Tool usage analytics
-- [ ] Auto-discovery of tools from mcp.so
-
----
-
-## 📄 License
-
-This project inherits the license from the parent AgenticRAG-TOOL-MCP project.
-
----
-
-## 🤝 Contributing
-
-When you migrate this project out of the parent directory, feel free to:
-1. Add more urban computing tools to the pool
-2. Improve LLM prompts for better tool selection
-3. Add support for more LLM providers
-4. Implement caching mechanisms
-
----
-
-## 📧 Contact
-
-For questions or issues, please refer to the parent project's issue tracker.

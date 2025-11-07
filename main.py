@@ -5,6 +5,7 @@
 import os
 import json
 from pathlib import Path
+from datetime import datetime
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from tool_manager import UrbanToolManager
@@ -234,8 +235,13 @@ def main():
             import traceback
             traceback.print_exc()
 
-    # 保存结果（可选）
-    output_file = Path(__file__).parent / "results.json"
+    # 保存结果到 Test 文件夹，带时间戳
+    test_dir = Path(__file__).parent / "Test"
+    test_dir.mkdir(exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = test_dir / f"results_{timestamp}.json"
+
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     print(f"💾 Results saved to {output_file}")

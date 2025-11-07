@@ -1,19 +1,10 @@
 """
 API Executor - 负责调用 REST API
 
-开发者：API 团队负责人
-职责：
 1. 实现 HTTP 请求（GET/POST/PUT/DELETE）
 2. 处理认证和 API keys
 3. 管理 API 调用缓存和限流
 4. 处理 API 错误和重试
-
-TODO for API Developer:
-- [ ] 实现智能重试机制
-- [ ] 实现速率限制处理
-- [ ] 添加响应缓存（避免重复调用）
-- [ ] 处理分页数据
-- [ ] 添加超时和熔断机制
 """
 
 import os
@@ -28,7 +19,7 @@ from pathlib import Path
 class APIExecutor:
     """REST API 工具执行器"""
 
-    def __init__(self, tools_dir: str = "./tools/api"):
+    def __init__(self, tools_dir: str = "./Cache/api"):
         """
         初始化 API 执行器
 

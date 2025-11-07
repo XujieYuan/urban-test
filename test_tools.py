@@ -53,7 +53,7 @@ def test_tool_retrieval():
 
 
 if __name__ == "__main__":
-    print("\n🧪 Urban Computing Tool System - Quick Test\n")
+    print("\nUrban Computing Tool System - Quick Test\n")
 
     success = True
     success = test_tool_loading() and success

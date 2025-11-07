@@ -4,21 +4,10 @@ MCP Executor - 负责调用 MCP 服务
 🚀 STATUS: Coming Soon
 这个模块计划在未来版本中实现。目前仅提供接口框架。
 
-开发者：MCP 团队负责人
-职责：
 1. 实现 MCP 协议通信
 2. 处理 MCP 服务的启动和连接
-3. 管理 MCP 调用缓存
-4. 处理 MCP 特定的错误
 
-TODO for MCP Developer:
-- [ ] 实现 MCP 服务发现
-- [ ] 实现 MCP stdio 通信
-- [ ] 实现 MCP SSE 通信
-- [ ] 添加连接池管理
-- [ ] 添加调用缓存机制
-
-参考资料（将来开发时使用）：
+参考资料：
 - MCP 官方文档: https://modelcontextprotocol.io/
 - Python MCP SDK: https://github.com/anthropics/python-sdk
 """
@@ -33,7 +22,7 @@ from pathlib import Path
 class MCPExecutor:
     """MCP 工具执行器"""
 
-    def __init__(self, tools_dir: str = "./tools/mcp"):
+    def __init__(self, tools_dir: str = "./Cache/mcp"):
         """
         初始化 MCP 执行器
 
