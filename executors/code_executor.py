@@ -1,5 +1,5 @@
 """
-Code Executor - 负责处理 GitHub 代码工具
+Code Executor - 处理 GitHub 代码工具
 
 🚀 STATUS: Coming Soon
 这个模块计划在未来版本中实现。目前仅提供接口框架。

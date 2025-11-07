@@ -4,7 +4,7 @@ An intelligent LLM-powered system that automatically selects and executes tools 
 
 ## ✨ Features
 
-- **Intelligent Tool Selection**: LLM automatically chooses the best tool for each query
+- **Tool Selection**: LLM automatically chooses the best tool for each query
 - **Multiple Tool Types**: REST APIs, MCP services, GitHub code repositories
 - **Response Caching**: Avoid redundant API calls with automatic caching
 - **Easy Configuration**: JSON-based tool pool management

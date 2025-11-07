@@ -1,10 +1,9 @@
 """
-API Executor - 负责调用 REST API
+API Executor - 调用 REST API
 
 1. 实现 HTTP 请求（GET/POST/PUT/DELETE）
 2. 处理认证和 API keys
-3. 管理 API 调用缓存和限流
-4. 处理 API 错误和重试
+3. 管理 API 缓存
 """
 
 import os
@@ -194,11 +193,6 @@ class APIExecutor:
     def _send_request(self, method: str, url: str, headers: Dict, params: Dict) -> Any:
         """
         发送 HTTP 请求
-
-        TODO: API 开发者可以增强此方法
-        - 添加重试机制
-        - 添加超时处理
-        - 添加响应验证
         """
         timeout = 30  # 默认超时 30 秒
 
@@ -256,7 +250,7 @@ class APIExecutor:
             json.dump(data, f)
 
 
-# 开发者测试代码
+# 测试代码
 if __name__ == "__main__":
     executor = APIExecutor()
 

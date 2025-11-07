@@ -1,5 +1,5 @@
 """
-MCP Executor - 负责调用 MCP 服务
+MCP Executor - 调用 MCP 服务
 
 🚀 STATUS: Coming Soon
 这个模块计划在未来版本中实现。目前仅提供接口框架。
@@ -110,12 +110,7 @@ class MCPExecutor:
 
     def _send_mcp_request(self, process: subprocess.Popen, method: str, params: Dict) -> Dict:
         """
-        发送 MCP 请求
-
-        TODO: MCP 开发者实现
-        - 构造 JSON-RPC 2.0 格式请求
-        - 通过 stdin 发送
-        - 从 stdout 读取响应
+        发送 MCP 请求 (待实现)
         """
         pass
 
@@ -134,7 +129,7 @@ class MCPExecutor:
             json.dump(data, f)
 
 
-# 开发者测试代码
+# 测试代码
 if __name__ == "__main__":
     executor = MCPExecutor()
 
